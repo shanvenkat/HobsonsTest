@@ -1,78 +1,131 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://api.example.com/
 
-# Polls API-Blueprint
+# Test Cider tAPI
 
-Poll is a simple API allowing users to view and vote for it.
+Welcome to the documentation, we'll bla bla.
 
-## Questions Collection [/questions]
+# Group Product
 
-### List All Questions [GET]
+## Product Collection [/products]
 
-+ Response 200 (application/json)
+- Attributes (Product Full)
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
+### Retrieve All Products [GET]
 
-### Create a New Question [POST]
+- Request (application/json)
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+- Response 200 (application/json)
 
-+ Request (application/json)
+    - Attributes (array[Product Full])
 
-        {
-            "question": "Favourite API Design?",
-            "choices": [
-                "Swagger",
-                "Apiary.io"
-            ]
-        }
+### Filter Products [GET /products{?type}]
 
-+ Response 201 (application/json)
+- Attributes (Product Full)
 
-    + Headers
+- Parameters
 
-            Location: /questions/2
+    - type (enum[string], optional) - Should the response return cider, perry or
+      all.
+        - Default: all
+        - Members
+            - all
+            - cider
+            - perry
 
-    + Body
+- Request (application/json)
 
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
-            }
+- Response 200 (application/json)
+
+    - Attributes (array[Product Full])
+
+### Create a Product [POST]
+
+- Request (application/json)
+
+    - Attributes (Product Create)
+
+- Response 201 (application/json)
+
+    - Attributes (Product Full)
+
+## Product Resource [/products/{id}]
+
+- Attributes (Product Full)
+
+### Update a Product [PATCH]
+
+- Request Successful Update (application/json)
+
+    - Attributes (Product Update Valid)
+
+- Response 200 (application/json)
+
+    - Attributes (Product Full)
+        - type: perry
+
+- Request Unsuccessful Update (application/json)
+
+    - Attributes (Product Update Invalid)
+
+- Response 422 (application/json)
+
+    - Attributes (Error Unprocessable Entity)
+        - message: `This was an invalid type, please select from cider or
+          perry.`
+        - attribute: type
+
+### Delete a Product [DELETE]
+
+- Response 204
+
+# Data Structures
+
+## Product Create (object)
+- name: Old Bristolian (string, required) - Name of the product.
+- description: Tastes like apple juice but knocks you on your arse. (string,
+  required) - Text description of outlininig taste and stuff.
+- type: cider (enum[string], required) - Is it made from apples or pears.
+    - cider
+    - perry
+- apv: 7.4 (number, optional)
+- image_url: `http://example.com/ciders/old-bris.jpg` (string, optional) - URL
+  of cider photo.
+
+## Product Update Valid (object)
+- type: perry
+
+## Product Update Invalid (object)
+- type: wine
+
+## Product Full (object)
+- id: djkfh34t234t (string, required) - Unique identifier.
+- Include Product Create
+- relationships (object)
+    - manufacturer
+    - recent_reviews
+
+## Manufacturer (object)
+- name
+- about
+- city
+- country
+
+# Review (object)
+- body
+- rating
+- name
+- relationship (object)
+    - user
+    - product
+
+# User (object)
+- username
+- name
+- email
+- password
+
+## Error Unprocessable Entity (object)
+- title: Unprocessable Entity
+- message: This resource could not be updated due to invalid arguments being
+  passed.
